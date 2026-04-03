@@ -1,0 +1,251 @@
+/* ============================================================
+   Floating Labels for Forms — Admin settings page
+   ============================================================ */
+
+.flfg-admin-wrap {
+	max-width: 900px;
+}
+
+.flfg-tagline {
+	color: #555;
+	margin-bottom: 1.5em;
+	font-size: 14px;
+}
+
+/* ----------------------------------------------------------
+   Style cards row
+   ---------------------------------------------------------- */
+
+.flfg-style-cards {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin: 0 0 2em;
+}
+
+.flfg-style-card {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	cursor: pointer;
+	border: 2px solid #ddd;
+	border-radius: 8px;
+	padding: 12px 14px 14px;
+	background: #fff;
+	min-width: 170px;
+	max-width: 210px;
+	transition: border-color 0.15s, box-shadow 0.15s;
+	position: relative;
+}
+
+.flfg-style-card input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.flfg-style-card:hover {
+	border-color: #0073aa;
+}
+
+.flfg-style-card.is-selected,
+.flfg-style-card:has(input:checked) {
+	border-color: #0073aa;
+	box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.15);
+}
+
+.flfg-card-label {
+	font-weight: 600;
+	font-size: 13px;
+	margin-top: 10px;
+	color: #1e1e1e;
+}
+
+.flfg-card-desc {
+	font-size: 12px;
+	color: #777;
+	margin-top: 3px;
+	line-height: 1.4;
+}
+
+/* ----------------------------------------------------------
+   Style card previews  (mini demo of each style)
+   ---------------------------------------------------------- */
+
+.flfg-card-preview {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 70px;
+	background: #f6f6f6;
+	border-radius: 5px;
+	overflow: hidden;
+}
+
+.flfg-card-disabled {
+	background: #f0f0f0;
+}
+
+.flfg-card-icon {
+	font-size: 22px;
+	color: #aaa;
+}
+
+/* --- shared mini field / label --- */
+.flfg-demo-wrap {
+	position: relative;
+	width: 120px;
+}
+
+.flfg-demo-field {
+	display: block;
+	width: 100%;
+	height: 28px;
+}
+
+.flfg-demo-label {
+	position: absolute;
+	font-size: 9px;
+	pointer-events: none;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* --- Style 1 preview (underline, label floated above) --- */
+.flfg-demo-style-1 .flfg-demo-field {
+	border: none;
+	border-bottom: 2px solid #0073aa;
+	background: transparent;
+}
+
+.flfg-demo-style-1 .flfg-demo-label--float {
+	top: -2px;
+	left: 0;
+	color: #0073aa;
+}
+
+/* --- Style 2 preview (outlined, label on border edge) --- */
+.flfg-demo-style-2 .flfg-demo-field {
+	border: 1.5px solid #0073aa;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.flfg-demo-style-2 .flfg-demo-label--float {
+	top: -6px;
+	left: 6px;
+	color: #0073aa;
+	background: #fff;
+	padding: 0 3px;
+}
+
+/* --- Style 3 preview (tall box, label inside at top) --- */
+.flfg-demo-style-3 .flfg-demo-field {
+	border: 1.5px solid #0073aa;
+	border-radius: 5px;
+	background: #fff;
+	height: 40px;
+}
+
+.flfg-demo-style-3 .flfg-demo-label--float {
+	top: 4px;
+	left: 8px;
+	color: #0073aa;
+}
+
+/* ----------------------------------------------------------
+   Per-form tables
+   ---------------------------------------------------------- */
+
+.flfg-forms-table {
+	margin-bottom: 2em;
+}
+
+.flfg-forms-table th {
+	font-weight: 600;
+}
+
+.flfg-forms-table select {
+	min-width: 180px;
+}
+
+/* ----------------------------------------------------------
+   Colour palette section
+   ---------------------------------------------------------- */
+
+.flfg-color-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	margin-bottom: 2em;
+	max-width: 560px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.flfg-color-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 14px;
+	background: #fff;
+	border-bottom: 1px solid #eee;
+}
+
+.flfg-color-row:last-child {
+	border-bottom: none;
+}
+
+.flfg-color-row label {
+	flex: 1;
+	font-size: 13px;
+	color: #3c434a;
+	margin: 0;
+	padding-right: 1em;
+	line-height: 1.4;
+}
+
+.flfg-color-controls {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.flfg-color-controls input[type="color"] {
+	width: 40px;
+	height: 32px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 2px;
+	cursor: pointer;
+	background: #fff;
+}
+
+.flfg-color-reset {
+	font-size: 12px;
+	color: #0073aa;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.flfg-color-reset:hover {
+	color: #005177;
+	text-decoration: underline;
+}
+
+/* ----------------------------------------------------------
+   Plugin-not-active notice
+   ---------------------------------------------------------- */
+
+.flfg-plugin-notice {
+	background: #fff8e5;
+	border-left: 4px solid #f0a500;
+	padding: 10px 14px;
+	margin-bottom: 1.5em;
+	font-size: 13px;
+	color: #555;
+	border-radius: 0 4px 4px 0;
+}

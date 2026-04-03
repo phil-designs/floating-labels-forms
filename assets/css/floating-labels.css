@@ -1,0 +1,485 @@
+/*
+ * Auto-fill detection — Chrome triggers animationstart on :-webkit-autofill.
+ * The JS listens for 'flfg-autofill-detect' to add .flfg-is-filled.
+ */
+@keyframes flfg-autofill-detect {
+	from { opacity: 1; }
+	to   { opacity: 1; }
+}
+
+.flfg-field:-webkit-autofill {
+	animation-name: flfg-autofill-detect;
+	animation-duration: 0.001s;
+}
+
+/*
+ * Floating Labels for Forms
+ * Three style variants controlled via data-flfg-style="1|2|3" on the <form>.
+ *
+ * Colour overrides: use CSS custom properties on the form or any ancestor.
+ *   --flfg-accent        active border / label colour   (default: #0073aa)
+ *   --flfg-label-idle    label colour when inside field  (default: #888)
+ *   --flfg-label-float   label colour when floated       (default: #555)
+ *   --flfg-text          input text colour               (default: #222)
+ *   --flfg-border        idle border colour              (default: #ccc)
+ *   --flfg-bg            input background                (default varies per style)
+ */
+
+/* ==========================================================================
+   Base — shared across all three styles
+   ========================================================================== */
+
+/*
+ * .flfg-wrap       — container that gains position:relative; receives
+ *                    .flfg-is-active (focused) and .flfg-is-filled (has value)
+ * .flfg-label      — the <label> or a <span> wrapping the label text
+ * .flfg-field      — the <input>, <textarea>, or <select>
+ * .flfg-fieldset   — a <fieldset> wrapping a radio/checkbox group
+ * .flfg-legend     — the <legend> inside .flfg-fieldset
+ */
+
+.flfg-wrap {
+	position: relative;
+	display: block;
+}
+
+/*
+ * Stacking order within .flfg-wrap:
+ *   label (z-index: 2) sits above the field (z-index: 1).
+ *
+ * Why this matters: Gravity Forms sets position:relative on .ginput_container,
+ * and CF7 may do the same on .wpcf7-form-control-wrap. Without explicit
+ * z-index those containers paint AFTER (on top of) the absolutely-positioned
+ * label, hiding it entirely. These two rules fix that for all three styles.
+ */
+.flfg-label {
+	z-index: 2;
+	opacity: 1;
+}
+
+.flfg-field {
+	position: relative;
+	z-index: 1;
+}
+
+/* Suppress the browser placeholder — the label IS the placeholder */
+.flfg-field::placeholder {
+	color: transparent !important;
+	opacity: 0 !important;
+}
+
+/* Textarea resize handle should not hide under the label */
+.flfg-field[type="textarea"],
+textarea.flfg-field {
+	resize: vertical;
+}
+
+/* Fieldset / legend: always visible, just styled smaller above the group */
+.flfg-fieldset {
+	border: 1px solid var(--flfg-border, #ccc);
+	border-radius: 4px;
+	padding: 0.75em 1em 0.75em;
+	margin-bottom: 1.25em;
+}
+
+.flfg-legend {
+	font-size: 0.78em;
+	font-weight: 600;
+	color: var(--flfg-label-float, #555);
+	letter-spacing: 0.03em;
+	padding: 0 0.375em;
+	opacity: 1;
+}
+
+/* ==========================================================================
+   Style 1 — Underline / Bottom border only
+   Inspired by: https://w3bits.com/labs/css-floating-labels/ (demo 1)
+
+   Layout:
+     .flfg-wrap has padding-top: 1.35em  ← space the floated label will live in
+     .flfg-label default top: 1.35em     ← sits right at the input's top edge
+     .flfg-field padding-top: 0.45em    ← pushes the typed text below label start
+     Floated: top → 0, font shrinks → 0.75em
+   ========================================================================== */
+
+[data-flfg-style="1"] .flfg-wrap {
+	padding-top: 1.35em;
+	margin-bottom: 1.5em;
+}
+
+[data-flfg-style="1"] .flfg-label {
+	position: absolute;
+	top: 1.35em;
+	left: auto;
+	font-size: 1em;
+	line-height: 1.2;
+	color: var(--flfg-label-idle, #888);
+	pointer-events: none;
+	transform-origin: left top;
+	transition:
+		top 0.22s ease,
+		font-size 0.22s ease,
+		color 0.22s ease;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100%;
+}
+
+[data-flfg-style="1"] .flfg-field {
+	display: block;
+	width: 100%;
+	background: transparent;
+	border: none;
+	border-bottom: 2px solid var(--flfg-border, #ccc);
+	border-radius: 0;
+	padding: 0.45em 0 0.3em;
+	font-size: 1em;
+	color: var(--flfg-text, #222);
+	outline: none;
+	transition: border-color 0.22s ease;
+	/* Prevent themes adding inner shadow */
+	box-shadow: none;
+}
+
+[data-flfg-style="1"] .flfg-field:focus {
+	box-shadow: none;
+}
+
+/* Floated label — active (focused) */
+[data-flfg-style="1"] .flfg-wrap.flfg-is-active .flfg-label {
+	top: 0;
+	font-size: 0.75em;
+	color: var(--flfg-accent, #0073aa);
+}
+
+/* Floated label — filled (has value, may not be focused) */
+[data-flfg-style="1"] .flfg-wrap.flfg-is-filled .flfg-label {
+	top: 0;
+	font-size: 0.75em;
+	color: var(--flfg-label-float, #555);
+}
+
+/* Border colour on focus */
+[data-flfg-style="1"] .flfg-wrap.flfg-is-active .flfg-field {
+	border-bottom-color: var(--flfg-accent, #0073aa);
+}
+
+/* Select: add a tiny right-padding so text doesn't touch the arrow */
+[data-flfg-style="1"] select.flfg-field {
+	padding-right: 1.5em;
+	cursor: pointer;
+}
+
+/* Textarea: top of label matches top of textarea text */
+[data-flfg-style="1"] textarea.flfg-field {
+	padding-top: 0.45em;
+	min-height: 5em;
+}
+
+/* ==========================================================================
+   Style 2 — Outlined Box, label floats to the top border edge
+   Inspired by: https://w3bits.com/labs/css-floating-labels/ (demo 2)
+
+   Layout:
+     .flfg-wrap has padding-top: 0.6em  ← half the floated-label height
+     .flfg-label default: inside the box at text level
+     Floated: label rises to the top border, gains a white background
+              so it "cuts" through the border line visually
+   ========================================================================== */
+
+[data-flfg-style="2"] .flfg-wrap {
+	padding-top: 0.6em;
+	margin-bottom: 1.5em;
+}
+
+[data-flfg-style="2"] .flfg-label {
+	position: absolute;
+	/* top = wrap padding-top + field padding-top, so label sits at cursor */
+	top: calc(0.6em + 0.72em);
+	left: 0.9em;
+	font-size: 1em;
+	line-height: 1.2;
+	color: var(--flfg-label-idle, #888);
+	pointer-events: none;
+	transform-origin: left top;
+	transition:
+		top 0.22s ease,
+		left 0.22s ease,
+		font-size 0.22s ease,
+		color 0.22s ease,
+		background-color 0.05s ease,
+		padding 0.05s ease;
+	white-space: nowrap;
+	/* overflow: visible so the label isn't clipped when it stradddles the border */
+	overflow: visible;
+	max-width: calc(100% - 1.8em);
+}
+
+[data-flfg-style="2"] .flfg-field {
+	display: block;
+	width: 100%;
+	background: var(--flfg-bg, #fafafa);
+	border: 1.5px solid var(--flfg-border, #ccc);
+	border-radius: 5px;
+	padding: 0.72em 0.9em;
+	font-size: 1em;
+	color: var(--flfg-text, #222);
+	outline: none;
+	box-shadow: none;
+	transition:
+		border-color 0.22s ease,
+		background-color 0.22s ease,
+		box-shadow 0.22s ease;
+}
+
+/* Floated label — active
+ *
+ * Wrap padding-top is 0.6em (= where the input border sits).
+ * Floated label height ≈ 0.75em font × 1.2 line-height = 0.9em.
+ * To straddle the border: top = border_pos − label_height/2 = 0.6 − 0.45 = 0.15em.
+ * The white background then visually "cuts" through the border line.
+ */
+[data-flfg-style="2"] .flfg-wrap.flfg-is-active .flfg-label {
+	top: 0.15em;
+	left: 0.65em;
+	font-size: 0.75em;
+	color: var(--flfg-accent, #0073aa);
+	background-color: #fff;
+	padding: 0 0.3em;
+	overflow: visible;
+}
+
+/* Floated label — filled */
+[data-flfg-style="2"] .flfg-wrap.flfg-is-filled .flfg-label {
+	top: 0.15em;
+	left: 0.65em;
+	font-size: 0.75em;
+	color: var(--flfg-label-float, #555);
+	background-color: #fff;
+	padding: 0 0.3em;
+	overflow: visible;
+}
+
+/* Border / shadow on focus */
+[data-flfg-style="2"] .flfg-wrap.flfg-is-active .flfg-field {
+	border-color: var(--flfg-accent, #0073aa);
+	background-color: #fff;
+	box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.12);
+}
+
+[data-flfg-style="2"] select.flfg-field {
+	cursor: pointer;
+}
+
+[data-flfg-style="2"] textarea.flfg-field {
+	min-height: 6em;
+}
+
+/* ==========================================================================
+   Style 3 — Padded Box, label stays inside and floats to the top interior
+   Inspired by: https://w3bits.com/labs/css-floating-labels/ (demo 3)
+
+   Layout:
+     No padding-top on .flfg-wrap (label never leaves the box)
+     .flfg-field has a tall padding-top (1.6em) to make room inside
+     .flfg-label starts at ~vertical centre of the box (acting as placeholder)
+     Floated: label moves to the top interior of the box, shrinks
+   ========================================================================== */
+
+[data-flfg-style="3"] .flfg-wrap {
+	padding-top: 0;
+	margin-bottom: 1.5em;
+}
+
+[data-flfg-style="3"] .flfg-label {
+	position: absolute;
+	/*
+	 * Default: label sits where the cursor appears — at the input's padding-top (1.6em).
+	 * label.top = field.padding-top − (label.line-height × 0.5)
+	 *           = 1.6em − 0.6em = 1.0em
+	 * This centres the label text on the cursor baseline.
+	 */
+	top: .6em;
+	left: 1em;
+	font-size: 1em;
+	line-height: 1.2;
+	color: var(--flfg-label-idle, #888);
+	pointer-events: none;
+	transform-origin: left top;
+	transition:
+		top 0.22s ease,
+		font-size 0.22s ease,
+		color 0.22s ease;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: calc(100% - 2em);
+}
+
+[data-flfg-style="3"] .flfg-field {
+	display: block;
+	width: 100%;
+	background: var(--flfg-bg, #fff);
+	border: 1.5px solid var(--flfg-border, #ddd);
+	border-radius: 6px;
+	/* Large padding-top pushes typed text below the floated label */
+	padding: 1.6em 1em 0.6em;
+	font-size: 1em;
+	color: var(--flfg-text, #222);
+	outline: none;
+	box-shadow: none;
+	transition:
+		border-color 0.22s ease,
+		box-shadow 0.22s ease;
+}
+
+/* Floated label — active */
+[data-flfg-style="3"] .flfg-wrap.flfg-is-active .flfg-label {
+	top: 0.38em;
+	font-size: 0.72em;
+	color: var(--flfg-accent, #0073aa);
+}
+
+/* Floated label — filled */
+[data-flfg-style="3"] .flfg-wrap.flfg-is-filled .flfg-label {
+	top: 0.38em;
+	font-size: 0.72em;
+	color: var(--flfg-label-float, #666);
+}
+
+/* Border / shadow on focus */
+[data-flfg-style="3"] .flfg-wrap.flfg-is-active .flfg-field {
+	border-color: var(--flfg-accent, #0073aa);
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07);
+}
+
+[data-flfg-style="3"] select.flfg-field {
+	cursor: pointer;
+}
+
+[data-flfg-style="3"] textarea.flfg-field {
+	min-height: 7em;
+}
+
+/* ==========================================================================
+   GF complex fieldset fields (Name, Address, Date, Email, Password, etc.)
+   GF 2.9+ wraps these in <fieldset> + <legend>. Because browsers pin <legend>
+   to the fieldset border and ignore position:absolute, we instead render the
+   <legend> as a static small group label above the row and apply individual
+   floating labels to each sub-input span (.flfg-sub-wrap).
+   ========================================================================== */
+
+/* Strip fieldset chrome so the complex wrap looks like plain flow content */
+[data-flfg-style] fieldset.flfg-wrap--complex {
+	border: none;
+	padding: 0;
+	margin: 0;
+	min-width: 0;
+}
+
+/* Static group label (replaces the floating behaviour for the top legend) */
+[data-flfg-style] .flfg-complex-legend {
+	display: block;
+	width: 100%;
+	font-size: 0.8em;
+	font-weight: 600;
+	color: var(--flfg-label-float, #555);
+	letter-spacing: 0.02em;
+	margin-bottom: 0.4em;
+	padding: 0;
+	float: none; /* override any GF float */
+	opacity: 1;
+}
+
+/* Each sub-input span gets the full floating-label treatment.
+ * Override display:block from the per-style .flfg-wrap rule — GF sizes
+ * and positions these spans inline (e.g. 50% width for first/last name). */
+[data-flfg-style] .flfg-wrap.flfg-sub-wrap {
+	display: inline-block;
+	vertical-align: top;
+	margin-bottom: 0.75em;
+}
+
+/* ==========================================================================
+   Gravity Forms structural overrides
+   Reset GF's default label margin/positioning for all three styles
+   ========================================================================== */
+
+[data-flfg-style] .gfield.flfg-wrap {
+	position: relative;
+}
+
+/* GF adds its own margin via .gfield — preserve it */
+[data-flfg-style] .gfield.flfg-wrap {
+	padding-bottom: 0;
+}
+
+/* The GF label is positioned by our .flfg-label rules above,
+   so remove GF's default display:block margin */
+[data-flfg-style] .gfield_label.flfg-label {
+	display: block;
+	margin: 0;
+	font-weight: normal; /* restore if theme overrides */
+}
+
+/* GF required asterisk — keep it next to the floated label */
+[data-flfg-style] .gfield_label.flfg-label .gfield_required {
+	margin-left: 0.15em;
+	color: inherit;
+}
+
+/* GF sub-labels (date fields etc) */
+[data-flfg-style] .gfield .ginput_complex label {
+	font-size: 0.72em;
+	color: var(--flfg-label-float, #555);
+}
+
+/* ==========================================================================
+   Contact Form 7 structural overrides
+   ========================================================================== */
+
+/* CF7 adds a <span> wrapper around each control — make sure it's a block */
+[data-flfg-style] .wpcf7-form-control-wrap {
+	display: block;
+}
+
+/* CF7 validation messages — push down so they don't overlap the field */
+[data-flfg-style] .wpcf7-not-valid-tip {
+	font-size: 0.8em;
+	margin-top: 0.25em;
+	display: block;
+}
+
+/* ==========================================================================
+   Error / valid state colouring (works for both plugins)
+   ========================================================================== */
+
+[data-flfg-style] .flfg-wrap.flfg-has-error .flfg-label,
+[data-flfg-style] .flfg-wrap.flfg-has-error.flfg-is-active .flfg-label {
+	color: #c0392b;
+}
+
+[data-flfg-style="1"] .flfg-wrap.flfg-has-error .flfg-field {
+	border-bottom-color: #c0392b;
+}
+
+[data-flfg-style="2"] .flfg-wrap.flfg-has-error .flfg-field,
+[data-flfg-style="3"] .flfg-wrap.flfg-has-error .flfg-field {
+	border-color: #c0392b;
+}
+
+[data-flfg-style="2"] .flfg-wrap.flfg-has-error.flfg-is-active .flfg-field {
+	box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
+}
+
+[data-flfg-style="3"] .flfg-wrap.flfg-has-error.flfg-is-active .flfg-field {
+	box-shadow: 0 3px 8px rgba(192, 57, 43, 0.1);
+}
+
+.gform_wrapper.gravity-theme .gfield_header_item, .gform_wrapper.gravity-theme .gform_fileupload_rules, .gform_wrapper.gravity-theme .ginput_complex label{
+	padding-top:0 !important;
+}
+.name_last label{
+	left:2em !important;
+}
