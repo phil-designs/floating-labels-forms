@@ -57,11 +57,12 @@ function flfg_handle_settings_save() {
 
 	// Global style
 	$valid_styles = [ '1', '2', '3', 'disabled' ];
-	$global       = sanitize_text_field( $_POST['flfg_global_style'] ?? '1' );
+	$global       = sanitize_text_field( wp_unslash( $_POST['flfg_global_style'] ?? '1' ) );
 	$options['global_style'] = in_array( $global, $valid_styles, true ) ? $global : '1';
 
 	// CF7 per-form overrides
-	$cf7_raw              = $_POST['flfg_cf7'] ?? [];
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each element is sanitized via sanitize_text_field() in the loop below.
+	$cf7_raw              = isset( $_POST['flfg_cf7'] ) ? wp_unslash( (array) $_POST['flfg_cf7'] ) : [];
 	$options['cf7_overrides'] = [];
 	if ( is_array( $cf7_raw ) ) {
 		foreach ( $cf7_raw as $id => $style ) {
@@ -74,7 +75,8 @@ function flfg_handle_settings_save() {
 	}
 
 	// GF per-form overrides
-	$gf_raw              = $_POST['flfg_gf'] ?? [];
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each element is sanitized via sanitize_text_field() in the loop below.
+	$gf_raw              = isset( $_POST['flfg_gf'] ) ? wp_unslash( (array) $_POST['flfg_gf'] ) : [];
 	$options['gf_overrides'] = [];
 	if ( is_array( $gf_raw ) ) {
 		foreach ( $gf_raw as $id => $style ) {
@@ -88,7 +90,8 @@ function flfg_handle_settings_save() {
 
 	// Colour overrides
 	$color_keys = [ 'accent', 'border', 'bg', 'label_idle', 'label_float', 'text' ];
-	$raw_colors = isset( $_POST['flfg_colors'] ) && is_array( $_POST['flfg_colors'] ) ? $_POST['flfg_colors'] : [];
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each colour value is validated via sanitize_hex_color() in the loop below.
+	$raw_colors = isset( $_POST['flfg_colors'] ) ? wp_unslash( (array) $_POST['flfg_colors'] ) : [];
 	$options['colors'] = [];
 	foreach ( $color_keys as $key ) {
 		if ( ! empty( $raw_colors[ $key ] ) ) {

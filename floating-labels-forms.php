@@ -1,16 +1,18 @@
 <?php
 /**
- * Plugin Name: Floating Labels for Forms
- * Plugin URI: http://phildesigns.com/
- * Description: Transforms Contact Form 7 and Gravity Forms labels and legends into accessible CSS floating labels. Choose from three distinct styles per form or globally.
- * Version:     1.0.0
- * Requires at least: 5.8
- * Requires PHP: 7.4
- * Author: phil.designs | Phillip De Vita
- * Author URI: http://phildesigns.com/
- * License:     GPL-2.0+
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: floating-labels-forms
+ * Plugin Name:       PhilDesigns Floating Labels for Forms
+ * Plugin URI:        https://phildesigns.com
+ * Description:       Transforms Contact Form 7 and Gravity Forms labels and legends into accessible CSS floating labels. Choose from three distinct styles per form or globally.
+ * Version:           1.0.0
+ * Author:            PhilDesigns
+ * Author URI:        https://phildesigns.com
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       floating-labels-forms
+ * Domain Path:       /languages
+ * Requires at least: 6.7
+ * Tested up to:      7.0
+ * Requires PHP:      7.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
